@@ -2,6 +2,8 @@
 #include "stdlib.h"
 #include "string.h"
 #include "stdio.h"
+#include "error-handling.h"
+
 
 
 uint8_t * extractOctetsFromInt(uint32_t ipv4) {
@@ -22,10 +24,17 @@ char *ipv4ToString(uint32_t ipv4)
     for(int i = 0; i < 3; i++) {
         shift += sprintf(strIp + shift, "%u.", octets[i]);
     }
-    shift += sprintf(strIp + shift, "%u.", octets[3]);
+    shift += sprintf(strIp + shift, "%u", octets[3]);
     strIp[shift] = '\0';
     free(octets);
     return strIp;
+}
+
+void printIp(uint32_t ipv4)
+{
+    char * ipAsString = ipv4ToString(ipv4);
+    printf("%s\n", ipAsString);
+    free(ipAsString);
 }
 
 uint32_t convertOctetsToInt(uint8_t * octets) {
@@ -40,7 +49,7 @@ uint32_t convertOctetsToInt(uint8_t * octets) {
 
 uint8_t * extractOctets(const char *str) {
     if(strlen(str) > 15) { // 4x3 numbers + 3 dots
-        exit(1); 
+        printAndQuit("Incorrect IPv4 address");
     }
     short shift = 0;
     uint8_t * octets =  malloc(sizeof(uint8_t) * 4); // left to right order
@@ -52,7 +61,7 @@ uint8_t * extractOctets(const char *str) {
         if(oct != 4) {
             char* dotPointer;
             if((dotPointer = strchr(str + shift, '.')) == NULL) {
-                exit(1);
+                printAndQuit("Incorrect IPv4 address");
             }
 
             int dotIndex = dotPointer - str;

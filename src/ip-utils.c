@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "error-handling.h"
 
+#define INCORRECT_IP_MSG "Incorrect IPv4 address"
 
 
 uint8_t * extractOctetsFromInt(uint32_t ipv4) {
@@ -49,7 +50,7 @@ uint32_t convertOctetsToInt(uint8_t * octets) {
 
 uint8_t * extractOctets(const char *str) {
     if(strlen(str) > 15) { // 4x3 numbers + 3 dots
-        printAndQuit("Incorrect IPv4 address");
+        printAndQuit(INCORRECT_IP_MSG);
     }
     short shift = 0;
     uint8_t * octets =  malloc(sizeof(uint8_t) * 4); // left to right order
@@ -61,7 +62,7 @@ uint8_t * extractOctets(const char *str) {
         if(oct != 4) {
             char* dotPointer;
             if((dotPointer = strchr(str + shift, '.')) == NULL) {
-                printAndQuit("Incorrect IPv4 address");
+                printAndQuit(INCORRECT_IP_MSG);
             }
 
             int dotIndex = dotPointer - str;
@@ -75,6 +76,9 @@ uint8_t * extractOctets(const char *str) {
         strncpy(strOct, str + shift, stringOctetSize);
         octInDec =  atoi(strOct);
         free(strOct);
+        if(octInDec > 255u) {
+            printAndQuit(INCORRECT_IP_MSG);
+        }
         shift = shiftUpdate;
         octets[oct - 1] = octInDec;
     }

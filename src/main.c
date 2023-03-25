@@ -12,6 +12,9 @@ int main(int argc, char **argv) {
     uint32_t mask = ipv4fromString(argv[2]);
     uint32_t networkIp = ip & mask;
     uint32_t broadcastIp = networkIp | ~mask;
+    uint32_t firstHost = networkIp + 1;
+    uint32_t lastHost = broadcastIp - 1;
+
     printf("IP: ");
     printIp(ip);
 
@@ -23,6 +26,16 @@ int main(int argc, char **argv) {
 
     printf("Broadcast: ");
     printIp(broadcastIp);
+
+    printf("First host: ");
+    printIp(firstHost);
+
+    printf("Last host: ");
+    printIp(lastHost);
+
+
+    // ~mask + 1, because ~mask does not include 0 host
+    printf("Number of hosts: %d\n", ~mask + 1 - 2);
     
     return 0;
 }
